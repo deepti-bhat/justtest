@@ -18,11 +18,12 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
+
 const result = document.getElementById("result");
 
-async function fetch() {
+async function fetch(info) {
     try{
-  
+        console.log("reached the function");
     const usersRef = ref(db, 'nsproj'); // Assuming 'users' is the path where user data is stored
     const usersSnapshot = await get(usersRef);
   
@@ -30,13 +31,16 @@ async function fetch() {
       usersSnapshot.forEach((userSnapshot) => {
           const userID = userSnapshot.key; // Get the user ID
           const userData = userSnapshot.val(); // Get the user data
-          if (userData && userData.doc == result.textContent) {
-              console.log(`User ID: ${userID}, Email: ${userData.doc}`);
+          console.log(userData.doc);
+          console.log(info);
+          if (userData && userData.doc == info) {
+            console.log(userData.doc);
+              console.log(`User ID: ${userID}, Email: ${info}`);
               const nodePath = `nsproj/${userID}`;
               const newData = {
-              doc: result.textContent,
+              doc: info,
               user: document.getElementById("name").textContent,
-              pass: document.getElementById("password").textContent
+              pass: document.getElementById("pass").textContent
           };
           update(ref(db, nodePath), newData)
               .then(() => {
@@ -56,13 +60,40 @@ async function fetch() {
     console.error("Error retrieving user data:", error);
   }
 }
-  
-while(true){
-    if (result.textContent !== null) {
-        fetch();
-        break;
-    }
+console.log("helloo");
+const scanner = new Html5QrcodeScanner('reader',{
+    qrbox:{
+        width:250,
+        height:250,
+
+    },
+    fps:20,
+});
+scanner.render(success, error);
+
+function success(result){
+    console.log(result);
+    document.getElementById('result').innerHTML=`<h2>Success</h2>
+    <p><a href="${result}">${result}</a></p>`;
+    const info = document.getElementById('result').textContent;
+    console.log(result);
+    fetch(result);
+    scanner.clear();
+    document.getElementById('reader').remove();
+
 }
+function error(err){
+    console.error(err);
+}
+
+
+  
+// while(true){
+//     if (result.textContent !== null) {
+//         fetch();
+//         break;
+//     }
+// }
 
 
 
