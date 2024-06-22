@@ -54,6 +54,7 @@ async function resetDoctor(doctor) {
       } catch (error) {
         console.error("Error retrieving user data:", error);
       }
+    window.location.href = "doctor.html";
 }
 // Add click event listener
 reset.addEventListener('click', function() {
